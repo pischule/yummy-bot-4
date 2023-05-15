@@ -12,10 +12,10 @@ const checkSecret = (params: RouteParams) => {
 };
 
 
-export const load = (async ({ params }) => {
+export const load = (async ({ params , platform}) => {
 	checkSecret(params);
 
-	const menu = await db.getMenu();
+	const menu = await db.getMenu(platform);
 	let itemsString = menu?.items.join('\n') ?? '';
 
 	let receiptDate: string;
@@ -36,7 +36,7 @@ export const load = (async ({ params }) => {
 	return { receiptDate, itemsString };
 }) satisfies PageServerLoad;
 
-const save = async (request: Request) => {
+const save = async (request: Request, platform: Readonly<App.Platform> | undefined) => {
 	const data = await request.formData();
 	const receiptDate = <string>data.get('receiptDate');
 	const itemsString = <string>data.get('items');
@@ -52,17 +52,17 @@ const save = async (request: Request) => {
 		items
 	} satisfies Menu;
 
-	await db.setMenu(menu);
+	await db.setMenu(menu, platform);
 };
 
 export const actions = {
-	save: async ({ request, params }) => {
+	save: async ({ request, params , platform}) => {
 		checkSecret(params);
-		await save(request);
+		await save(request, platform);
 	},
-	saveAndSend: async ({ request, params }) => {
+	saveAndSend: async ({ request, params, platform }) => {
 		checkSecret(params);
-		await save(request);
+		await save(request, platform);
 		await bot.sendOrderButton();
 	}
 } satisfies Actions;

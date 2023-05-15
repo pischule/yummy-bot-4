@@ -12,12 +12,12 @@ const WEEKDAYS = [
 	'субботу'
 ];
 
-export const load = (async ({ locals }) => {
+export const load = (async ({ locals, platform }) => {
 	if (!locals.userId) {
 		throw error(401, 'Unauthorized');
 	}
 
-	const menu = await db.getMenu();
+	const menu = await db.getMenu(platform);
 	if (!menu) {
 		return {
 			menu: null,
@@ -28,7 +28,7 @@ export const load = (async ({ locals }) => {
 	const weekday = WEEKDAYS[new Date(menu.receiptDate).getDay()];
 
 	return {
-		menu: await db.getMenu(),
+		menu: await db.getMenu(platform),
 		weekday: weekday
 	};
 }) satisfies PageServerLoad;

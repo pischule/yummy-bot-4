@@ -7,7 +7,11 @@ declare global {
 			userId?: string,
 		}
 		// interface PageData {}
-		// interface Platform {}
+		interface Platform {
+			env?: {
+				YUMMY: KVNamespace
+			}
+		}
 	}
 }
 
